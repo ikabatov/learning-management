@@ -39,5 +39,4 @@ public class Course {
 
     @ManyToMany(mappedBy = "courses")
     private Set<Group> groups = new HashSet<>();
-
 }
