@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.TeacherRequest;
 import ru.ik.learningmanagement.dto.TeacherResponse;
 import ru.ik.learningmanagement.entity.Teacher;
-import ru.ik.learningmanagement.exception.NotFoundException;
 import ru.ik.learningmanagement.mapper.TeacherMapper;
 import ru.ik.learningmanagement.repository.TeacherRepository;
 
@@ -19,7 +18,7 @@ public class TeacherService {
 
     @Transactional(readOnly = true)
     public TeacherResponse getTeacherById(Long id) {
-        Teacher teacher = findByIdOrThrow(id);
+        Teacher teacher = teacherRepository.findByIdOrThrow(id);
         return teacherMapper.toDto(teacher);
     }
 
@@ -31,7 +30,7 @@ public class TeacherService {
 
     @Transactional
     public TeacherResponse updateTeacher(Long id, TeacherRequest teacherRequest) {
-        Teacher teacher = findByIdOrThrow(id);
+        Teacher teacher = teacherRepository.findByIdOrThrow(id);
         teacherMapper.updateEntity(teacherRequest, teacher);
         Teacher updatedTeacher = teacherRepository.save(teacher);
         return teacherMapper.toDto(updatedTeacher);
@@ -39,12 +38,8 @@ public class TeacherService {
 
     @Transactional
     public void deleteTeacher(Long id) {
-        Teacher teacher = findByIdOrThrow(id);
+        Teacher teacher = teacherRepository.findByIdOrThrow(id);
         teacherRepository.delete(teacher);
     }
 
-    private Teacher findByIdOrThrow(Long id) {
-        return teacherRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Учитель с id " + id + " не найден"));
-    }
 }
