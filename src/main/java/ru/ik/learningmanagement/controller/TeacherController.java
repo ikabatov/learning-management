@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,5 +49,13 @@ public class TeacherController {
     public TeacherResponse updateTeacher(@PathVariable Long id,
                                          @Valid @RequestBody TeacherRequest teacherRequest) {
         return teacherService.updateTeacher(id, teacherRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Удалить информацию об учителе")
+    @ApiResponse(responseCode = "404", description = "Учитель не найден")
+    public void deleteTeacher(@PathVariable Long id) {
+        teacherService.deleteTeacher(id);
     }
 }

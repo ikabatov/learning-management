@@ -37,6 +37,12 @@ public class TeacherService {
         return teacherMapper.toDto(updatedTeacher);
     }
 
+    @Transactional
+    public void deleteTeacher(Long id) {
+        Teacher teacher = findByIdOrThrow(id);
+        teacherRepository.delete(teacher);
+    }
+
     private Teacher findByIdOrThrow(Long id) {
         return teacherRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Учитель с id " + id + " не найден"));
