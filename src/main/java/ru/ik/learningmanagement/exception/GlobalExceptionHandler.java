@@ -15,5 +15,4 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotFound(NotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
-
 }

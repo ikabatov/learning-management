@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,7 +40,15 @@ public class CourseController {
     @ApiResponse(responseCode = "400", description = "Некорректные данные")
     @ApiResponse(responseCode = "404", description = "Курс или учитель не найден")
     public CourseResponse updateCourse(@PathVariable Long id,
-            @Valid @RequestBody CourseRequest courseRequest) {
+                                       @Valid @RequestBody CourseRequest courseRequest) {
         return courseService.updateCourse(id, courseRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Удалить курс")
+    @ApiResponse(responseCode = "404", description = "Курс не найден")
+    public void deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
     }
 }

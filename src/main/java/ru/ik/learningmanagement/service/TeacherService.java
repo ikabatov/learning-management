@@ -41,5 +41,4 @@ public class TeacherService {
         Teacher teacher = teacherRepository.findByIdOrThrow(id);
         teacherRepository.delete(teacher);
     }
-
 }

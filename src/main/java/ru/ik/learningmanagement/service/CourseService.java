@@ -36,4 +36,10 @@ public class CourseService {
         courseRepository.save(course);
         return courseMapper.toDto(course);
     }
+
+    @Transactional
+    public void deleteCourse(Long id) {
+        Course course = courseRepository.findByIdOrThrow(id);
+        courseRepository.delete(course);
+    }
 }
