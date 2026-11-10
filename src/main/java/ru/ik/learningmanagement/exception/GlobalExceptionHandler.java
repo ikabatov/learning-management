@@ -15,4 +15,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotFound(NotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleAlreadyExists(AlreadyExistsException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
