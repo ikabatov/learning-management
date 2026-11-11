@@ -21,4 +21,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleAlreadyExists(AlreadyExistsException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
