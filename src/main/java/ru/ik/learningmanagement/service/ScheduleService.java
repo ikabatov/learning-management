@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.ScheduleRequest;
 import ru.ik.learningmanagement.dto.ScheduleResponse;
+import ru.ik.learningmanagement.dto.ScheduleTimeRequest;
 import ru.ik.learningmanagement.entity.Course;
 import ru.ik.learningmanagement.entity.Group;
 import ru.ik.learningmanagement.entity.Schedule;
@@ -13,6 +14,8 @@ import ru.ik.learningmanagement.mapper.ScheduleMapper;
 import ru.ik.learningmanagement.repository.CourseRepository;
 import ru.ik.learningmanagement.repository.GroupRepository;
 import ru.ik.learningmanagement.repository.ScheduleRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +30,7 @@ public class ScheduleService {
     public ScheduleResponse createSchedule(ScheduleRequest scheduleRequest) {
         Group group = groupRepository.findByIdOrThrow(scheduleRequest.groupId());
         Course course = courseRepository.findByIdOrThrow(scheduleRequest.courseId());
-
-        if (scheduleRequest.dateStart().isAfter(scheduleRequest.dateEnd())
-                || scheduleRequest.dateStart().isEqual(scheduleRequest.dateEnd())) {
-            throw new BadRequestException("Дата окончания должна быть позже даты начала");
-        }
+        validateDateRange(scheduleRequest.dateStart(), scheduleRequest.dateEnd());
 
         if (!group.getCourses().contains(course)) {
             throw new BadRequestException("Группа не записана на этот курс");
@@ -45,8 +44,23 @@ public class ScheduleService {
     }
 
     @Transactional
+    public ScheduleResponse updateSchedule(Long id, ScheduleTimeRequest scheduleTimeRequest) {
+        Schedule schedule = scheduleRepository.findByIdOrThrow(id);
+        validateDateRange(scheduleTimeRequest.dateStart(), scheduleTimeRequest.dateEnd());
+        scheduleMapper.updateEntity(scheduleTimeRequest, schedule);
+        return scheduleMapper.toDto(schedule);
+    }
+
+    @Transactional
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findByIdOrThrow(id);
         scheduleRepository.delete(schedule);
+    }
+
+    private void validateDateRange(LocalDateTime dateStart, LocalDateTime dateEnd) {
+        if (dateStart.isAfter(dateEnd)
+                || dateStart.isEqual(dateEnd)) {
+            throw new BadRequestException("Дата окончания должна быть позже даты начала");
+        }
     }
 }
