@@ -14,3 +14,7 @@ spring:
         format_sql: true      # форматировать SQL для читаемости
 springdoc:
   override-with-generic-response: false
+app:
+  schedule-cleanup:
+    cron: "0 0 3 * * *"
+

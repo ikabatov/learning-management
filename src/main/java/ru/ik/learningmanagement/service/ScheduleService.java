@@ -77,6 +77,12 @@ public class ScheduleService {
         return responsePage;
     }
 
+    @Transactional
+    public void deleteOldSchedules() {
+        LocalDateTime border = LocalDateTime.now().minusYears(1);
+        scheduleRepository.deleteAllEndedBefore(border);
+    }
+
     private void validateDateRange(LocalDateTime dateStart, LocalDateTime dateEnd) {
         if (dateStart.isAfter(dateEnd)
                 || dateStart.isEqual(dateEnd)) {
