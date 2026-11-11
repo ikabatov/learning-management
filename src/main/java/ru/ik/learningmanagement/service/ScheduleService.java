@@ -1,6 +1,8 @@
 package ru.ik.learningmanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.ScheduleRequest;
@@ -14,6 +16,7 @@ import ru.ik.learningmanagement.mapper.ScheduleMapper;
 import ru.ik.learningmanagement.repository.CourseRepository;
 import ru.ik.learningmanagement.repository.GroupRepository;
 import ru.ik.learningmanagement.repository.ScheduleRepository;
+import ru.ik.learningmanagement.repository.TeacherRepository;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +27,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
+    private final TeacherRepository teacherRepository;
     private final ScheduleMapper scheduleMapper;
 
     @Transactional
@@ -55,6 +59,22 @@ public class ScheduleService {
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findByIdOrThrow(id);
         scheduleRepository.delete(schedule);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ScheduleResponse> getGroupSchedule(Long groupId, Pageable pageable) {
+        groupRepository.findByIdOrThrow(groupId);
+        Page<Schedule> schedulePage = scheduleRepository.findByGroupId(groupId, pageable);
+        Page<ScheduleResponse> responsePage = schedulePage.map(schedule -> scheduleMapper.toDto(schedule));
+        return responsePage;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ScheduleResponse> getTeacherSchedule(Long teacherId, Pageable pageable) {
+        teacherRepository.findByIdOrThrow(teacherId);
+        Page<Schedule> schedulePage = scheduleRepository.findByCourseTeacherId(teacherId, pageable);
+        Page<ScheduleResponse> responsePage = schedulePage.map(schedule -> scheduleMapper.toDto(schedule));
+        return responsePage;
     }
 
     private void validateDateRange(LocalDateTime dateStart, LocalDateTime dateEnd) {

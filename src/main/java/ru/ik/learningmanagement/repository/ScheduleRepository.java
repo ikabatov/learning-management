@@ -1,5 +1,7 @@
 package ru.ik.learningmanagement.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.ik.learningmanagement.entity.Schedule;
 import ru.ik.learningmanagement.exception.NotFoundException;
@@ -10,4 +12,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         return findById(id).orElseThrow(
                 () -> new NotFoundException("Расписание с ID: " + id + " не найдено"));
     }
+
+    Page<Schedule> findByGroupId(Long groupId, Pageable pageable);
+
+    Page<Schedule> findByCourseTeacherId(Long teacherId, Pageable pageable);
 }
