@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: learning-management-db
+    environment:
+      POSTGRES_DB: learning_management
+      POSTGRES_USER: learning_management
+      POSTGRES_PASSWORD: learning_management
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
