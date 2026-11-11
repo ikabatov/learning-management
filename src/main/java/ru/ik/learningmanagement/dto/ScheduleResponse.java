@@ -1,9 +1,8 @@
 package ru.ik.learningmanagement.dto;
 
-
 import java.time.LocalDateTime;
 
-public record ScheduleResponse (
+public record ScheduleResponse(
         Long id,
         GroupResponse group,
         CourseResponse course,

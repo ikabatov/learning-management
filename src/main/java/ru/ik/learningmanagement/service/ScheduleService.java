@@ -33,7 +33,7 @@ public class ScheduleService {
             throw new BadRequestException("Дата окончания должна быть позже даты начала");
         }
 
-        if(!group.getCourses().contains(course)) {
+        if (!group.getCourses().contains(course)) {
             throw new BadRequestException("Группа не записана на этот курс");
         }
 
@@ -42,5 +42,11 @@ public class ScheduleService {
         schedule.setCourse(course);
         scheduleRepository.save(schedule);
         return scheduleMapper.toDto(schedule);
+    }
+
+    @Transactional
+    public void deleteSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findByIdOrThrow(id);
+        scheduleRepository.delete(schedule);
     }
 }
