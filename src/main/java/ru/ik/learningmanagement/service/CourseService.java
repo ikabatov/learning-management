@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.CourseRequest;
 import ru.ik.learningmanagement.dto.CourseResponse;
 import ru.ik.learningmanagement.entity.Course;
+import ru.ik.learningmanagement.entity.Group;
 import ru.ik.learningmanagement.entity.Teacher;
 import ru.ik.learningmanagement.mapper.CourseMapper;
 import ru.ik.learningmanagement.repository.CourseRepository;
+import ru.ik.learningmanagement.repository.GroupRepository;
 import ru.ik.learningmanagement.repository.TeacherRepository;
 
 @Service
@@ -18,6 +20,7 @@ public class CourseService {
     private final TeacherRepository teacherRepository;
     private final CourseMapper courseMapper;
     private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
 
     public CourseResponse createCourse(CourseRequest courseRequest) {
         Teacher teacher = teacherRepository.findByIdOrThrow(courseRequest.teacherId());
@@ -41,5 +44,12 @@ public class CourseService {
     public void deleteCourse(Long id) {
         Course course = courseRepository.findByIdOrThrow(id);
         courseRepository.delete(course);
+    }
+
+    @Transactional
+    public void addGroupToCourse(Long courseId, Long groupId) {
+        Course course = courseRepository.findByIdOrThrow(courseId);
+        Group group = groupRepository.findByIdOrThrow(groupId);
+        group.getCourses().add(course);
     }
 }

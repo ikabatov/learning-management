@@ -51,4 +51,11 @@ public class CourseController {
     public void deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
     }
+
+    @PostMapping("/{courseId}/groups/{groupId}")
+    @Operation(summary = "Добавить группу на курс")
+    @ApiResponse(responseCode = "404", description = "Курс или группа не найден")
+    public void addGroupToCourse(@PathVariable Long courseId, @PathVariable Long groupId) {
+        courseService.addGroupToCourse(courseId, groupId);
+    }
 }
