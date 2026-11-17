@@ -1,6 +1,8 @@
 package ru.ik.learningmanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.GroupRequest;
@@ -16,6 +18,18 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
     private final GroupMapper groupMapper;
+
+    @Transactional(readOnly = true)
+    public GroupResponse getGroupById(Long id) {
+        Group group = groupRepository.findByIdOrThrow(id);
+        return groupMapper.toDto(group);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GroupResponse> getAllGroups(Pageable pageable) {
+        Page<Group> groupPage = groupRepository.findAll(pageable);
+        return groupPage.map(groupMapper::toDto);
+    }
 
     public GroupResponse createGroup(GroupRequest groupRequest) {
         validateNameIsUnique(groupRequest.name());
