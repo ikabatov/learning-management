@@ -1,6 +1,8 @@
 package ru.ik.learningmanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.CourseRequest;
@@ -21,6 +23,18 @@ public class CourseService {
     private final CourseMapper courseMapper;
     private final CourseRepository courseRepository;
     private final GroupRepository groupRepository;
+
+    @Transactional(readOnly = true)
+    public CourseResponse getCourseById(Long id) {
+        Course course = courseRepository.findByIdOrThrow(id);
+        return courseMapper.toDto(course);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CourseResponse> getAllCourses(Pageable pageable) {
+        Page<Course> coursePage = courseRepository.findAll(pageable);
+        return coursePage.map(courseMapper::toDto);
+    }
 
     public CourseResponse createCourse(CourseRequest courseRequest) {
         Teacher teacher = teacherRepository.findByIdOrThrow(courseRequest.teacherId());
