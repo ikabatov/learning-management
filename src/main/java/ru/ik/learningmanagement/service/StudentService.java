@@ -1,6 +1,8 @@
 package ru.ik.learningmanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ik.learningmanagement.dto.StudentRequest;
@@ -24,6 +26,18 @@ public class StudentService {
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+
+    @Transactional(readOnly = true)
+    public StudentResponse getStudentById(Long id) {
+        Student student = studentRepository.findByIdOrThrow(id);
+        return studentMapper.toDto(student);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StudentResponse> getAllStudents(Pageable pageable) {
+        Page<Student> studentPage = studentRepository.findAll(pageable);
+        return studentPage.map(studentMapper::toDto);
+    }
 
     @Transactional
     public StudentResponse createStudent(StudentRequest studentRequest) {

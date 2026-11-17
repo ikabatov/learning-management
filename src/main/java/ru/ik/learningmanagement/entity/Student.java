@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +34,7 @@ public class Student {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @BatchSize(size = 10)
     @ManyToMany
     @JoinTable(
             name = "student_groups",
