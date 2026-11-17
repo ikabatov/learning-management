@@ -25,6 +25,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
+    @Transactional
     public StudentResponse createStudent(StudentRequest studentRequest) {
         Set<Group> groups = findGroupsOrThrow(studentRequest.groupIds());
         Student student = studentMapper.toEntity(studentRequest);
