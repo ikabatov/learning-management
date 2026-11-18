@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-group-courses
+      author: ikabatov
+      changes:
+        - createTable:
+            tableName: group_courses
+            columns:
+              - column:
+                  name: course_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_group_courses_course
+                    references: courses(id)
+                    deleteCascade: true
+              - column:
+                  name: group_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_group_courses_group
+                    references: groups(id)
+                    deleteCascade: true

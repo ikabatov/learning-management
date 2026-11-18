@@ -1,3 +1,20 @@
 spring:
-  application:
-    name: learning-management
+  datasource:
+    url: jdbc:postgresql://localhost:5433/learning_management
+    username: learning_management
+    password: learning_management
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true            # выводить SQL-запросы в консоль
+    properties:
+      hibernate:
+        format_sql: true      # форматировать SQL для читаемости
+springdoc:
+  override-with-generic-response: false
+app:
+  schedule-cleanup:
+    cron: "0 0 3 * * *"
+
