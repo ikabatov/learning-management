@@ -23,6 +23,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     Page<Schedule> findByCourseTeacherId(Long teacherId, Pageable pageable);
 
     @Modifying
+    @Query("delete from Schedule s where s.course.id = :courseId")
+    void deleteAllByCourseId(@Param("courseId") Long courseId);
+
+    @Modifying
     @Query("delete from Schedule s where s.dateEnd < :date")
     void deleteAllEndedBefore(@Param("date") LocalDateTime date);
 }

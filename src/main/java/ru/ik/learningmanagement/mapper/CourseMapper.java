@@ -15,10 +15,16 @@ public interface CourseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "teacher", ignore = true)
     @Mapping(target = "groups", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
     Course toEntity(CourseRequest courseRequest);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "teacher", ignore = true)
     @Mapping(target = "groups", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
     void updateEntity(CourseRequest courseRequest, @MappingTarget Course course);
 }

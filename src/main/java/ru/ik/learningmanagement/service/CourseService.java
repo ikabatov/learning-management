@@ -13,6 +13,7 @@ import ru.ik.learningmanagement.entity.Teacher;
 import ru.ik.learningmanagement.mapper.CourseMapper;
 import ru.ik.learningmanagement.repository.CourseRepository;
 import ru.ik.learningmanagement.repository.GroupRepository;
+import ru.ik.learningmanagement.repository.ScheduleRepository;
 import ru.ik.learningmanagement.repository.TeacherRepository;
 
 @Service
@@ -23,6 +24,7 @@ public class CourseService {
     private final CourseMapper courseMapper;
     private final CourseRepository courseRepository;
     private final GroupRepository groupRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Transactional(readOnly = true)
     public CourseResponse getCourseById(Long id) {
@@ -50,13 +52,17 @@ public class CourseService {
         Teacher teacher = teacherRepository.findByIdOrThrow(courseRequest.teacherId());
         courseMapper.updateEntity(courseRequest, course);
         course.setTeacher(teacher);
-        courseRepository.save(course);
+        courseRepository.saveAndFlush(course);
         return courseMapper.toDto(course);
     }
 
     @Transactional
     public void deleteCourse(Long id) {
         Course course = courseRepository.findByIdOrThrow(id);
+        scheduleRepository.deleteAllByCourseId(id);
+        for (Group group : course.getGroups()) {
+            group.getCourses().remove(course);
+        }
         courseRepository.delete(course);
     }
 

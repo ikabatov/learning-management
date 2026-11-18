@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-add-audit-fields-to-courses
+      author: ikabatov
+      changes:
+        - addColumn:
+            tableName: courses
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
