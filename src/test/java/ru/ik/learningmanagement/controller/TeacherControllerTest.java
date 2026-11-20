@@ -1,34 +1,34 @@
 package ru.ik.learningmanagement.controller;
 
 import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.ik.learningmanagement.TestcontainersConfiguration;
 import ru.ik.learningmanagement.entity.Teacher;
 import ru.ik.learningmanagement.repository.TeacherRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
+@Sql("/sql/teachers.sql")
+@Sql(scripts = "/sql/cleanup.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class TeacherControllerTest {
 
     private static final String URL = "/api/v1/teachers";
     private static final long NON_EXISTENT_ID = Long.MAX_VALUE;
+    private static final long IVAN_ID = 1L;
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,24 +36,11 @@ class TeacherControllerTest {
     @Autowired
     private TeacherRepository teacherRepository;
 
-    private Teacher ivan;
-
-    @BeforeEach
-    void setUp() {
-        ivan = teacherRepository.save(createTeacher("Ivan", "Petrov"));
-        teacherRepository.save(createTeacher("Anna", "Smirnova"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        teacherRepository.deleteAll();
-    }
-
     @Test
     void getTeacherById_whenExists_returnsTeacher() throws Exception {
-        mockMvc.perform(get(URL + "/{id}", ivan.getId()))
+        mockMvc.perform(get(URL + "/{id}", IVAN_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(ivan.getId()))
+                .andExpect(jsonPath("$.id").value(IVAN_ID))
                 .andExpect(jsonPath("$.firstName").value("Ivan"))
                 .andExpect(jsonPath("$.lastName").value("Petrov"));
     }
@@ -109,15 +96,15 @@ class TeacherControllerTest {
                 {"firstName": "Ivan", "lastName": "Ivanov"}
                 """;
 
-        mockMvc.perform(put(URL + "/{id}", ivan.getId())
+        mockMvc.perform(put(URL + "/{id}", IVAN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(ivan.getId()))
+                .andExpect(jsonPath("$.id").value(IVAN_ID))
                 .andExpect(jsonPath("$.firstName").value("Ivan"))
                 .andExpect(jsonPath("$.lastName").value("Ivanov"));
 
-        Teacher updated = teacherRepository.findById(ivan.getId()).orElseThrow();
+        Teacher updated = teacherRepository.findById(IVAN_ID).orElseThrow();
         assertThat(updated.getFirstName()).isEqualTo("Ivan");
         assertThat(updated.getLastName()).isEqualTo("Ivanov");
     }
@@ -141,21 +128,21 @@ class TeacherControllerTest {
                 {"firstName": "Ivan", "lastName": ""}
                 """;
 
-        mockMvc.perform(put(URL + "/{id}", ivan.getId())
+        mockMvc.perform(put(URL + "/{id}", IVAN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
 
-        Teacher notChanged = teacherRepository.findById(ivan.getId()).orElseThrow();
+        Teacher notChanged = teacherRepository.findById(IVAN_ID).orElseThrow();
         assertThat(notChanged.getLastName()).isEqualTo("Petrov");
     }
 
     @Test
     void deleteTeacher_whenExists_returns204AndRemovesFromDb() throws Exception {
-        mockMvc.perform(delete(URL + "/{id}", ivan.getId()))
+        mockMvc.perform(delete(URL + "/{id}", IVAN_ID))
                 .andExpect(status().isNoContent());
 
-        assertThat(teacherRepository.existsById(ivan.getId())).isFalse();
+        assertThat(teacherRepository.existsById(IVAN_ID)).isFalse();
         assertThat(teacherRepository.count()).isEqualTo(1);
     }
 
@@ -166,12 +153,5 @@ class TeacherControllerTest {
                 .andExpect(jsonPath("$.message").value("Учитель с id " + NON_EXISTENT_ID + " не найден"));
 
         assertThat(teacherRepository.count()).isEqualTo(2);
-    }
-
-    private Teacher createTeacher(String firstName, String lastName) {
-        Teacher teacher = new Teacher();
-        teacher.setFirstName(firstName);
-        teacher.setLastName(lastName);
-        return teacher;
     }
 }
